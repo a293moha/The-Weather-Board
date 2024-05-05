@@ -1,6 +1,21 @@
 const apiKey = '676ad8e513de1266b5f536d6cb1e0eac';
 const apiUrl = 'https://api.openweathermap.org/data/2.5/';
 
+function getWeather(city) {
+    const url = '${https://api.openweathermap.org/data/2.5/}weather?q=${city}&units=metric&appid=${676ad8e513de1266b5f536d6cb1e0eac}';
+}
+
+fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+        displayCurrentWeather(data);
+    })
+    .catch(error => {
+        console.error('Error fetching current weather:', error);
+        alert('Failed to fetch weather data. Please try again');
+    });
+
+
 $(document).ready(function() {
     $('#search-btn').click(function() {
         const city = $('#city-input').val();
