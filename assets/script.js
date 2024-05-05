@@ -2,9 +2,10 @@ const apiKey = '676ad8e513de1266b5f536d6cb1e0eac';
 const apiUrl = 'https://api.openweathermap.org/data/2.5/';
 
 function getWeather(city) {
-    const url = '${https://api.openweathermap.org/data/2.5/}weather?q=${city}&units=metric&appid=${676ad8e513de1266b5f536d6cb1e0eac}';
+    const url = `${apiUrl}weather?q=${city}&units=metric&appid=${apiKey}`;
 }
 
+// funtion to fetch from weather API
 fetch(apiUrl)
     .then(response => response.json())
     .then(data => {
@@ -18,20 +19,26 @@ fetch(apiUrl)
 
 $(document).ready(function() {
     $('#search-btn').click(function() {
-        const city = $('#city-input').val();
-        getWeather(city);
-        addToHistory(city);
+        const city = $('#city-input').val().trim();
+        if (city) {
+            getWeather(city);
+            getForecast(city);
+            addToHistory(city);
+        } else {
+            alert('Please enter a city name');
+        }
+        
     });
 });
 
 function getWeather(city) {
+    const url = `${apiUrl}weather?q=${city}&units=metric&appid=${apiKey}`;
     $.ajax({
-        url: `${apiUrl}weather?q=${city}&units=metric&appid=${apiKey}`,
+        url: url,
         type: 'GET',
         dataType: 'json',
         success: function(data) {
             displayCurrentWeather(data, city);
-            getForecast(city);
         },
         error: function(error) {
             console.error('Error fetching current weather:', error);
@@ -40,8 +47,9 @@ function getWeather(city) {
 }
 
 function getForecast(city) {
+    const url = `${apiUrl}weather?q=${city}&units=metric&appid=${apiKey}`;
     $.ajax({
-        url: `${apiUrl}forecast?q=${city}&units=metric&appid=${apiKey}`,
+        url: url,
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -49,6 +57,7 @@ function getForecast(city) {
         },
         error: function(error) {
             console.error('Error fetching forecast:', error);
+            alert('Failed to retrieve forcast data.')
         }
     });
 }
@@ -64,19 +73,20 @@ function displayCurrentWeather(data, city) {
 }
 
 function displayForecast(data) {
-    let forecastHtml = '<h2 class="text-lg">5-Day Forecast:</h2>';
-    data.list.filter((item, index) => index % 8 === 0).forEach((item) => {
-        forecastHtml += `
-            <div class="weather-card bg-gray-200 p-4 rounded">
-                <h3>${new Date(item.dt_txt).toLocaleDateString()}</h3>
-                <img src="http://openweathermap.org/img/wn/${item.weather[0].icon}.png">
-                <p>Temp: ${item.main.temp.toFixed(2)}°C</p>
-                <p>Wind: ${item.wind.speed} MPH</p>
-                <p>Humidity: ${item.main.humidity} %</p>
-            </div>
-        `;
-    });
-    $('#forecast-weather').html(forecastHtml);
+    const forecast = document.getElementById('forecast-results');
+    forecast.innerHTML = '<h2>5-Day Forecast</h2>';
+    data.list.forEach((item, index) => {
+        if (index % 8 === 0) { 
+            forecast.innerHTML += `<div>
+                                      <p><strong>Date:</strong> ${new Date(item.dt * 1000).toDateString()}</p>
+                                      <p>Temperature: ${item.main.temp} °C</p>
+                                      <p>Weather: ${item.weather[0].description}</p>
+                                      <p>Humidity: ${item.main.humidity}%</p>
+                                      <p>Wind Speed: ${item.wind.speed} m/s</p>
+                                    </div>`;
+        }
+    })
+    $('#forecast-results').html(forecastHtml);
 }
 
 function addToHistory(city) {
@@ -84,5 +94,13 @@ function addToHistory(city) {
     $('#search-history').prepend(historyItem);
     $('.history-btn').click(function() {
         getWeather($(this).text());
+        getForecast($(this).text());
     });
 }
+
+
+document.getElementById('search-btn').addEventListener('click', function() {
+    const city = document.getElementById('city-input').value;
+    getWeather(city);
+    getForecast(city);
+});
