@@ -20,6 +20,10 @@ The Weather Dashboard is a web application that provides users with current and 
 
 **5-Day Forecast:** Shows the date, weather icon, temperature, humidity, and wind speed for the next five days
 
+### Links
+[GitHub](https://github.com/a293moha/The-Weather-Board)
+
+[Deployed Application](https://a293moha.github.io/The-Weather-Board/)
 
 ### Screenshot
 ![alt text](weather_dashboard_screenshot.jpg)
